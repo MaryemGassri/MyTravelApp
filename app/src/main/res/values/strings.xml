@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TravelApp</string>
+    <string name="location">Location</string>
+    <string name="header_image_desc">Notifications</string>
+    <string name="address_hint">Address, City...</string>
+    <string name="search">Search</string>
+    <string name="popular_destinations">Popular Destinations</string>
+    <string name="see_all">See all</string>
+    <string name="recommended">Recommended</string>
+    <string name="slider_image_desc">Slider image</string>
+</resources>
