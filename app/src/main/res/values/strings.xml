@@ -8,4 +8,16 @@
     <string name="see_all">See all</string>
     <string name="recommended">Recommended</string>
     <string name="slider_image_desc">Slider image</string>
+
+    <!-- === Strings used in activity_ticket.xml === -->
+    <string name="upcoming_trip">Upcoming trip</string>
+    <string name="title">Title</string>
+    <string name="show_this_ticket_to_the_your_guid_before_departure">
+        Show this ticket to your guide before departure
+    </string>
+    <string name="total_guest">Total guest</string>
+    <string name="time">Time</string>
+    <string name="tip_duration">Trip duration</string>
+    <string name="tour_guide">Tour guide</string>
+    <string name="download_ticket">Download ticket</string>
 </resources>

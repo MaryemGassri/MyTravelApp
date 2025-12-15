@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Simple rounded-corner style used in activity_ticket.xml -->
+    <style name="roundedFullCorner">
+        <!-- Background with rounded corners, change to whatever drawable you want -->
+        <item name="android:background">@drawable/light_purple_bg</item>
+
+        <!-- Optional extras -->
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

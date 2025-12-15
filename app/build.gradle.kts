@@ -1,14 +1,11 @@
-
-//buil.gradle.kts(Module:app) code
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
 }
 
-
 android {
     namespace = "com.example.travelapp"
-    compileSdk=35
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.travelapp"
@@ -29,12 +26,14 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures{
-        viewBinding=true
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -44,16 +43,19 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
 
-    //  Firebase dependencies
+    // Firebase BOM and services
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

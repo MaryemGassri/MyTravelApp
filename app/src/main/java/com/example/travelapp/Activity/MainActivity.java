@@ -1,8 +1,9 @@
 package com.example.travelapp.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import com.example.travelapp.Domain.Location;
 import com.example.travelapp.Domain.SliderItems;
 import com.example.travelapp.R;
 import com.example.travelapp.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private FirebaseDatabase database;
+    private PopularAdapter popularAdapter;
+    private RecommendedAdapter recommendedAdapter;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,30 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Connect to the correct Firebase DB
+        mAuth = FirebaseAuth.getInstance();
+
+        binding.chipNavigationBar.setOnItemSelectedListener(id -> {
+            if (id == R.id.bookmark) {
+                Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+                ArrayList<Item> bookmarkedItems = new ArrayList<>();
+                if (popularAdapter != null) {
+                    bookmarkedItems.addAll(popularAdapter.getBookmarkedItems());
+                }
+                if (recommendedAdapter != null) {
+                    bookmarkedItems.addAll(recommendedAdapter.getBookmarkedItems());
+                }
+                intent.putExtra("bookmarkedItems", bookmarkedItems);
+                startActivity(intent);
+            } else if (id == R.id.cart) {
+                mAuth.signOut();
+                Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         database = FirebaseDatabase.getInstance(
                 "https://travelapp-accfc-default-rtdb.firebaseio.com/"
         );
@@ -51,12 +79,11 @@ public class MainActivity extends AppCompatActivity {
         initRecommended();
     }
 
-    // -------------------- Recommended (RecyclerView Horizontal) --------------------
     private void initRecommended() {
         DatabaseReference myRef = database.getReference("Item");
         final ArrayList<Item> list = new ArrayList<>();
 
-        binding.progressBarRecommended.setVisibility(View.VISIBLE);
+        binding.progressBarRecommended.setVisibility(android.view.View.VISIBLE);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -77,29 +104,27 @@ public class MainActivity extends AppCompatActivity {
                                     LinearLayoutManager.HORIZONTAL,
                                     false)
                     );
-                    RecommendedAdapter adapter = new RecommendedAdapter(list);
-                    binding.recyclerViewRecommended.setAdapter(adapter);
+                    recommendedAdapter = new RecommendedAdapter(list);
+                    binding.recyclerViewRecommended.setAdapter(recommendedAdapter);
                 } else {
                     binding.recyclerViewRecommended.setAdapter(null);
                 }
 
-                binding.progressBarRecommended.setVisibility(View.GONE);
+                binding.progressBarRecommended.setVisibility(android.view.View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // hide correct progress bar on error
-                binding.progressBarPopular.setVisibility(View.GONE);
+                binding.progressBarPopular.setVisibility(android.view.View.GONE);
             }
         });
     }
 
-    // -------------------- Popular (RecyclerView Horizontal) --------------------
     private void initPopular() {
         DatabaseReference myRef = database.getReference("Popular");
         final ArrayList<Item> list = new ArrayList<>();
 
-        binding.progressBarPopular.setVisibility(View.VISIBLE);
+        binding.progressBarPopular.setVisibility(android.view.View.VISIBLE);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -120,29 +145,27 @@ public class MainActivity extends AppCompatActivity {
                                     LinearLayoutManager.HORIZONTAL,
                                     false)
                     );
-                    PopularAdapter adapter = new PopularAdapter(list);
-                    binding.recyclerViewPopular.setAdapter(adapter);
+                    popularAdapter = new PopularAdapter(list);
+                    binding.recyclerViewPopular.setAdapter(popularAdapter);
                 } else {
                     binding.recyclerViewPopular.setAdapter(null);
                 }
 
-                binding.progressBarPopular.setVisibility(View.GONE);
+                binding.progressBarPopular.setVisibility(android.view.View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // hide correct progress bar on error
-                binding.progressBarPopular.setVisibility(View.GONE);
+                binding.progressBarPopular.setVisibility(android.view.View.GONE);
             }
         });
     }
 
-    // -------------------- Categories (RecyclerView Horizontal) --------------------
     private void initCategory() {
         DatabaseReference myRef = database.getReference("Category");
         final ArrayList<Category> list = new ArrayList<>();
 
-        binding.progressBarCategory.setVisibility(View.VISIBLE);
+        binding.progressBarCategory.setVisibility(android.view.View.VISIBLE);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -167,17 +190,16 @@ public class MainActivity extends AppCompatActivity {
                     binding.recyclerViewCategory.setAdapter(null);
                 }
 
-                binding.progressBarCategory.setVisibility(View.GONE);
+                binding.progressBarCategory.setVisibility(android.view.View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBarCategory.setVisibility(View.GONE);
+                binding.progressBarCategory.setVisibility(android.view.View.GONE);
             }
         });
     }
 
-    // -------------------- Spinner Locations --------------------
     private void initLocations() {
         DatabaseReference myRef = database.getReference("Location");
         final ArrayList<Location> locations = new ArrayList<>();
@@ -213,14 +235,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // -------------------- Firebase Banners --------------------
     private void banners(ArrayList<SliderItems> items) {
         binding.viewPager2.setAdapter(new SliderAdapter(items, binding.viewPager2));
         binding.viewPager2.setClipToPadding(false);
         binding.viewPager2.setClipChildren(false);
         binding.viewPager2.setOffscreenPageLimit(3);
         if (binding.viewPager2.getChildCount() > 0) {
-            binding.viewPager2.getChildAt(0).setOverScrollMode(View.OVER_SCROLL_NEVER);
+            binding.viewPager2.getChildAt(0).setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
         }
 
         CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
@@ -232,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference myRef = database.getReference("Banner");
         final ArrayList<SliderItems> items = new ArrayList<>();
 
-        binding.progBarBanner.setVisibility(View.VISIBLE);
+        binding.progBarBanner.setVisibility(android.view.View.VISIBLE);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -251,13 +272,19 @@ public class MainActivity extends AppCompatActivity {
                     binding.viewPager2.setAdapter(null);
                 }
 
-                binding.progBarBanner.setVisibility(View.GONE);
+                binding.progBarBanner.setVisibility(android.view.View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                binding.progBarBanner.setVisibility(View.GONE);
+                binding.progBarBanner.setVisibility(android.view.View.GONE);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }

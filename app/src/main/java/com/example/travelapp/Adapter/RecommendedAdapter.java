@@ -1,15 +1,18 @@
 package com.example.travelapp.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.travelapp.Activity.DetailActivity;
 import com.example.travelapp.Domain.Item;
-import com.example.travelapp.databinding.ViewholderPopularBinding;
+import com.example.travelapp.R;
 import com.example.travelapp.databinding.ViewholderRecommendedBinding;
 
 import java.util.ArrayList;
@@ -17,9 +20,8 @@ import java.util.ArrayList;
 public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.ViewHolder> {
 
     private final ArrayList<Item> items;
+    private final ArrayList<Item> bookmarkedItems = new ArrayList<>();
     private Context context;
-
-    ViewholderRecommendedBinding binding;
 
     public RecommendedAdapter(ArrayList<Item> items) {
         this.items = items;
@@ -48,13 +50,29 @@ public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.
                 .into(holder.binding.pic);
 
         holder.itemView.setOnClickListener(v -> {
-            // handle click here if needed
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("object", item);
+            context.startActivity(intent);
+        });
+
+        holder.binding.bookmarkBtn.setOnClickListener(v -> {
+            if (bookmarkedItems.contains(item)) {
+                bookmarkedItems.remove(item);
+                ((ImageView) v).setImageResource(R.drawable.ic_bookmark_border);
+            } else {
+                bookmarkedItems.add(item);
+                ((ImageView) v).setImageResource(R.drawable.ic_bookmark);
+            }
         });
     }
 
     @Override
     public int getItemCount() {
         return items != null ? items.size() : 0;
+    }
+
+    public ArrayList<Item> getBookmarkedItems() {
+        return bookmarkedItems;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
